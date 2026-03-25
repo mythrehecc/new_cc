@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-export const API_URL = 'https://flask-backend-yo1b.onrender.com/server/api';
+export const API_URL = 'http://localhost:8000/api';
+// export const API_URL = 'https://flask-backend-yo1b.onrender.com/server/api';
 // export const API_URL = 'https://dev.api.dockly.me/server/api';
 export const api = axios.create({
   baseURL: API_URL,

@@ -1,43 +1,31 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAdmin } from './admin/context';
 import { submitCareerForm } from '@/services/api';
 import EditableText from '@/components/admin/editableText';
 import { 
-  Briefcase, Zap, TrendingUp, Clock, UploadCloud, 
-  ShieldCheck, Phone, Building, Mail, Calendar, ArrowRight, FileText
+  Briefcase, Clock, UploadCloud, 
+  ShieldCheck, GraduationCap, Users, 
+  Rocket, BookOpen, Target, Heart, Monitor, Layers, Globe, Mail, Share2
 } from "lucide-react";
 
-const iconMap = {
-  Zap, TrendingUp, Clock, Building, Phone, Mail, Calendar, ShieldCheck, UploadCloud, Briefcase, ArrowRight
-};
-
-const renderIcon = (iconName: string, size: number = 24) => {
-  const IconComponent = iconMap[iconName as keyof typeof iconMap];
-  return IconComponent ? <IconComponent size={size} /> : null;
-};
-
+// Exact colors matching the reference design
 const COLORS = {
-  heroBg: 'radial-gradient(at 0% 0%, #EEF2FF 0, transparent 50%), radial-gradient(at 100% 0%, #E0F2FE 0, transparent 50%), radial-gradient(at 50% 100%, #F8FAFC 0, transparent 50%), #F1F5F9',
-  bgBase: '#F8FAFC',
-  primary: '#4F46E5',
-  primaryHover: '#4338CA',
-  textBlack: '#0F172A',
-  textMuted: '#475569',
-  white: '#FFFFFF',
-  border: '#E2E8F0',
+  primary: '#0b50da',        
+  primaryHover: '#0a42b5',
+  bgLight: '#f5f6f8',        
+  white: '#ffffff',
+  textBlack: '#0f172a',      
+  textMuted: '#64748b',      
+  textDarker: '#475569',     
+  cardBorder: '#e2e8f0',     
+  darkSection: '#101622',    
+  lightBlueBg: 'rgba(11, 80, 218, 0.1)', 
 };
 
-// Updated font sizes for a more professional "SaaS" feel
-const TYPOGRAPHY = {
-  h1: 'clamp(2.5rem, 6vw, 4rem)',
-  h2: 'clamp(1.75rem, 4vw, 2.25rem)',
-  h3: '1.25rem',
-  body: '1.125rem',
-  small: '0.875rem'
-};
+const FONT_FAMILY = "'Inter', sans-serif";
 
 export default function CareersPage() {
   const { config, saveConfigToServer } = useAdmin();
@@ -48,15 +36,22 @@ export default function CareersPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
 
-  const handleSave = () => saveConfigToServer();
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 864);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
+  const handleSave = () => saveConfigToServer();
   if (!PAGE_DATA) return null;
 
+  // --- PRESERVED ORIGINAL FUNCTIONALITY ---
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     setStatus(null);
-
     const formData = new FormData(e.currentTarget);
     if (!resumeFile) {
       setStatus({ type: 'error', msg: 'Please select a resume file.' });
@@ -64,7 +59,6 @@ export default function CareersPage() {
       return;
     }
     formData.append('resume', resumeFile);
-
     try {
       await submitCareerForm(formData);
       setStatus({ type: 'success', msg: "Application submitted successfully!" });
@@ -73,144 +67,232 @@ export default function CareersPage() {
       (e.target as HTMLFormElement).reset();
     } catch (error) {
       setStatus({ type: 'error', msg: "Submission failed. Please try again." });
-      console.error("Career form submission error:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div style={{ backgroundColor: COLORS.bgBase, fontFamily: "'Plus Jakarta Sans', sans-serif", minHeight: '100vh', color: COLORS.textBlack }}>
-      
-      {/* 1. HERO SECTION */}
-      <section style={{ padding: '140px 24px 100px', background: COLORS.heroBg, textAlign: 'center' }}>
-        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-             <span style={{ background: COLORS.white, padding: '8px 16px', borderRadius: '100px', fontSize: '12px', fontWeight: 700, color: COLORS.primary, border: `1px solid ${COLORS.border}`, letterSpacing: '0.05em' }}>
-                <EditableText value={PAGE_DATA.hero.badge} onSave={handleSave} configPath="careers.PAGE_DATA.hero.badge">
-                  {PAGE_DATA.hero.badge}
-                </EditableText>
-             </span>
-          </motion.div>
+    <div style={{ backgroundColor: COLORS.bgLight, fontFamily: FONT_FAMILY, color: COLORS.textBlack, overflowX: 'hidden' }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        * { box-sizing: border-box; }
+        @keyframes ping {
+          75%, 100% { transform: scale(2); opacity: 0; }
+        }
+        .animate-ping { animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; }
+        .hover-scale:hover { transform: scale(1.05); }
+      `}</style>
+
+      {/* --- 1. HERO SECTION (Centered, No Image) --- */}
+      <section style={{ backgroundColor: COLORS.bgLight, padding: isMobile ? '80px 24px' : '140px 24px 100px', textAlign: 'center' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            style={{ fontSize: TYPOGRAPHY.h1, fontWeight: 800, margin: '24px 0', lineHeight: 1.05, letterSpacing: '-0.02em' }}
-          >
-            <EditableText value={PAGE_DATA.hero.titleMain} onSave={handleSave} configPath="careers.PAGE_DATA.hero.titleMain">{PAGE_DATA.hero.titleMain}</EditableText>
-            <span style={{ color: COLORS.primary }}>
-               <EditableText value={PAGE_DATA.hero.titleAccent} onSave={handleSave} configPath="careers.PAGE_DATA.hero.titleAccent">{PAGE_DATA.hero.titleAccent}</EditableText>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: COLORS.lightBlueBg, color: COLORS.primary, padding: '6px 16px', borderRadius: '100px', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '24px' }}>
+            <span style={{ position: 'relative', display: 'flex', width: '8px', height: '8px' }}>
+              <span className="animate-ping" style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', backgroundColor: COLORS.primary, opacity: 0.7 }}></span>
+              <span style={{ position: 'relative', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: COLORS.primary }}></span>
             </span>
-            <EditableText value={PAGE_DATA.hero.titleEnd} onSave={handleSave} configPath="careers.PAGE_DATA.hero.titleEnd">{PAGE_DATA.hero.titleEnd}</EditableText>
-          </motion.h1>
+            <EditableText value={PAGE_DATA.hero.badge} onSave={handleSave} configPath="careers.PAGE_DATA.hero.badge">{PAGE_DATA.hero.badge}</EditableText>
+          </div>
           
-          <p style={{ fontSize: TYPOGRAPHY.body, color: COLORS.textMuted, maxWidth: '650px', margin: '0 auto 40px', lineHeight: 1.6 }}>
-            <EditableText value={PAGE_DATA.hero.description} onSave={handleSave} configPath="careers.PAGE_DATA.hero.description" multiline={true}>
-              {PAGE_DATA.hero.description}
-            </EditableText>
+          <h1 style={{ fontSize: isMobile ? '40px' : '64px', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.02em', marginBottom: '24px', color: COLORS.textBlack }}>
+            <EditableText value={PAGE_DATA.hero.titleMain} onSave={handleSave} configPath="careers.PAGE_DATA.hero.titleMain">{PAGE_DATA.hero.titleMain}</EditableText>
+            <br />
+            <span style={{ color: COLORS.primary }}>
+              <EditableText value={PAGE_DATA.hero.titleAccent} onSave={handleSave} configPath="careers.PAGE_DATA.hero.titleAccent">{PAGE_DATA.hero.titleAccent}</EditableText>
+            </span>
+            <br />
+            <EditableText value={PAGE_DATA.hero.titleEnd} onSave={handleSave} configPath="careers.PAGE_DATA.hero.titleEnd">{PAGE_DATA.hero.titleEnd}</EditableText>
+          </h1>
+          
+          <p style={{ fontSize: '18px', color: COLORS.textDarker, lineHeight: 1.6, marginBottom: '40px', maxWidth: '600px' }}>
+            <EditableText value={PAGE_DATA.hero.description} onSave={handleSave} configPath="careers.PAGE_DATA.hero.description" multiline>{PAGE_DATA.hero.description}</EditableText>
           </p>
+          
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center' }}>
+            <button onClick={() => document.getElementById('roles')?.scrollIntoView({behavior:'smooth'})} style={{ backgroundColor: COLORS.primary, color: COLORS.white, padding: '16px 32px', borderRadius: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '16px', boxShadow: '0 10px 15px -3px rgba(11, 80, 218, 0.25)', transition: 'all 0.2s' }}>
+              View Open Roles
+            </button>
+            <button style={{ backgroundColor: COLORS.white, color: COLORS.textBlack, padding: '16px 32px', borderRadius: '12px', fontWeight: 700, border: `1px solid ${COLORS.cardBorder}`, cursor: 'pointer', fontSize: '16px', transition: 'all 0.2s' }}>
+              Learn More
+            </button>
+          </div>
+
         </div>
       </section>
 
-      <main style={{ maxWidth: '1200px', margin: '-60px auto 0', padding: '0 24px 100px', position: 'relative', zIndex: 20 }}>
-        
-        {/* 2. CTA BANNER */}
-        <section style={{ marginBottom: '60px' }}>
-          <div style={{ background: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(12px)', padding: '32px', borderRadius: '24px', border: `1px solid ${COLORS.white}`, boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }}>
-            <div style={{ flex: '1 1 400px' }}>
-              <h2 style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2rem)', fontWeight: 800, marginBottom: '10px' }}>
-                <EditableText value={PAGE_DATA.vacancies.title} onSave={handleSave} configPath="careers.PAGE_DATA.vacancies.title">{PAGE_DATA.vacancies.title}</EditableText>
-              </h2>
-              <p style={{ color: COLORS.textMuted, fontSize: 'clamp(0.8rem, 1.2vw, 0.9rem)' }}>
-                <EditableText value={PAGE_DATA.vacancies.description} onSave={handleSave} configPath="careers.PAGE_DATA.vacancies.description">{PAGE_DATA.vacancies.description}</EditableText>
-              </p>
-            </div>
-            <button
-              onClick={() => window.location.href = '/vacancies'}
-              style={{ background: COLORS.primary, color: COLORS.white, padding: '14px 28px', borderRadius: '12px', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s ease' }}
-              onMouseOver={(e) => e.currentTarget.style.backgroundColor = COLORS.primaryHover}
-              onMouseOut={(e) => e.currentTarget.style.backgroundColor = COLORS.primary}
-            >
-              View Open Roles
-              <ArrowRight size={18} />
-            </button>
+      {/* --- 2. WHY JOIN (White Background) --- */}
+      <section style={{ backgroundColor: COLORS.white, padding: '80px 24px' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <h2 style={{ fontSize: isMobile ? '28px' : '36px', fontWeight: 800, marginBottom: '12px' }}>
+              <EditableText value={PAGE_DATA.advantages.title} onSave={handleSave} configPath="careers.PAGE_DATA.advantages.title">{PAGE_DATA.advantages.title}</EditableText>
+            </h2>
+            <p style={{ color: COLORS.textDarker, fontSize: '16px' }}>We provide the environment and resources you need to do the best work of your career.</p>
           </div>
-        </section>
-
-        {/* 3. ADVANTAGES */}
-        <section style={{ marginBottom: '70px' }}>
-          <h2 style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2rem)', fontWeight: 800, textAlign: 'center', marginBottom: '40px' }}>
-            <EditableText value={PAGE_DATA.advantages.title} onSave={handleSave} configPath="careers.PAGE_DATA.advantages.title">{PAGE_DATA.advantages.title}</EditableText>
-          </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
-            {PAGE_DATA.advantages.items.map((item, i) => (
-              <motion.div whileHover={{ y: -5 }} key={i} style={{ background: COLORS.white, padding: '28px', borderRadius: '20px', border: `1px solid ${COLORS.border}`, boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)' }}>
-                <div style={{ width: '40px', height: '40px', background: '#EEF2FF', color: COLORS.primary, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '18px' }}>
-                  {renderIcon(item.icon, 20)}
+          
+          <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? '100%' : '250px'}, 1fr))`, gap: '24px' }}>
+            {[
+              { icon: <Rocket size={28}/>, title: "Real Product Experience", desc: "Work on live products that impact thousands of users daily from day one." },
+              { icon: <GraduationCap size={28}/>, title: "Growth & Learning", desc: "Structured mentorship and generous education stipends for your career path." },
+              { icon: <Users size={28}/>, title: "Collaborative Culture", desc: "No silos. We work across teams to solve complex problems together." },
+              { icon: <Target size={28}/>, title: "Ownership & Impact", desc: "We trust you with autonomy. Your decisions shape the future of our products." },
+            ].map((item, i) => (
+              <div key={i} className="group hover-scale" style={{ backgroundColor: COLORS.bgLight, padding: '32px', borderRadius: '16px', border: `1px solid ${COLORS.cardBorder}`, transition: 'all 0.3s' }}>
+                <div style={{ width: '56px', height: '56px', backgroundColor: COLORS.lightBlueBg, color: COLORS.primary, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
+                  {item.icon}
                 </div>
-                <h3 style={{ fontSize: 'clamp(1rem, 2vw, 1.1rem)', fontWeight: 800, marginBottom: '10px' }}>
-                  <EditableText value={item.title} onSave={handleSave} configPath={`careers.PAGE_DATA.advantages.items.${i}.title`}>{item.title}</EditableText>
+                <h3 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '12px' }}>
+                  <EditableText value={PAGE_DATA.advantages.items[i]?.title || item.title} onSave={handleSave} configPath={`careers.PAGE_DATA.advantages.items.${i}.title`}>{PAGE_DATA.advantages.items[i]?.title || item.title}</EditableText>
                 </h3>
-                <p style={{ fontSize: 'clamp(0.85rem, 1.5vw, 0.95rem)', color: COLORS.textMuted, lineHeight: 1.6 }}>
-                  <EditableText value={item.text} onSave={handleSave} configPath={`careers.PAGE_DATA.advantages.items.${i}.text`} multiline={true}>{item.text}</EditableText>
+                <p style={{ fontSize: '14px', color: COLORS.textDarker, lineHeight: 1.6 }}>
+                  <EditableText value={PAGE_DATA.advantages.items[i]?.text || item.desc} onSave={handleSave} configPath={`careers.PAGE_DATA.advantages.items.${i}.text`} multiline>{PAGE_DATA.advantages.items[i]?.text || item.desc}</EditableText>
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* 4. APPLICATION FORM */}
-        <section id="apply" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '40px', background: COLORS.white, borderRadius: '30px', border: `1px solid ${COLORS.border}`, padding: '50px 40px', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.08)' }}>
-          <div>
-            <h2 style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2rem)', fontWeight: 800, marginBottom: '16px' }}>
-              <EditableText value={PAGE_DATA.formSection.title} onSave={handleSave} configPath="careers.PAGE_DATA.formSection.title">{PAGE_DATA.formSection.title}</EditableText>
-            </h2>
-            <p style={{ color: COLORS.textMuted, fontSize: 'clamp(0.9rem, 1.5vw, 1rem)', lineHeight: 1.7 }}>
-              <EditableText value={PAGE_DATA.formSection.description} onSave={handleSave} configPath="careers.PAGE_DATA.formSection.description" multiline={true}>{PAGE_DATA.formSection.description}</EditableText>
-            </p>
+      {/* --- 3. LIFE AT CRESTCODE (Centered) --- */}
+      <section style={{ backgroundColor: COLORS.bgLight, padding: '60px 24px' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', backgroundColor: COLORS.primary, borderRadius: '24px', overflow: 'hidden', position: 'relative' }}>
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.1, backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }}></div>
+          
+          <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: isMobile ? '32px 24px' : '48px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ color: COLORS.white, maxWidth: '800px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 20 }}>
+              <h2 style={{ fontSize: isMobile ? '32px' : '48px', fontWeight: 800, marginBottom: '32px', textAlign: 'center' }}>Life at Crestcode</h2>
+              <div style={{ fontSize: '18px', lineHeight: 1.7, opacity: 0.9, display: 'flex', flexDirection: 'column', gap: '24px', textAlign: 'center' }}>
+                <p>Our work culture is built on a foundation of <strong>radical trust</strong> and <strong>empowerment</strong>. We don't believe in micromanagement; we believe in hiring exceptional people and giving them the space to excel.</p>
+                <p>Whether you're working remotely or from our innovation hubs, you'll find a community that celebrates diversity of thought, celebrates wins together, and supports each other during challenges.</p>
+              </div>
+            </div>
+            
+            {/* Images positioned behind text */}
+            <div style={{ position: 'absolute', top: '0', left: '0', right: '0', bottom: '0', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1, opacity: 0.3 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', maxWidth: '600px', width: '100%', padding: '0 48px' }}>
+                <div style={{ height: '192px', borderRadius: '16px', backgroundColor: 'rgba(255,255,255,0.1)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: "url('https://images.unsplash.com/photo-1522071820081-009f0129c71c')" }}></div>
+                <div style={{ height: '192px', borderRadius: '16px', backgroundColor: 'rgba(255,255,255,0.1)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: "url('https://images.unsplash.com/photo-1531482615713-2afd69097998')", marginTop: '32px' }}></div>
+                <div style={{ height: '192px', borderRadius: '16px', backgroundColor: 'rgba(255,255,255,0.1)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: "url('https://images.unsplash.com/photo-1556761175-b413da4baf72')", marginTop: '-32px' }}></div>
+                <div style={{ height: '192px', borderRadius: '16px', backgroundColor: 'rgba(255,255,255,0.1)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: "url('https://images.unsplash.com/photo-1517048676732-d65bc937f952')" }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- 4. OPEN POSITIONS --- */}
+      <section id="roles" style={{ backgroundColor: COLORS.bgLight, padding: '60px 24px' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'flex-end', marginBottom: '40px', gap: '24px' }}>
+            <div>
+              <h2 style={{ fontSize: isMobile ? '28px' : '36px', fontWeight: 800, marginBottom: '12px' }}>Open Positions</h2>
+              <p style={{ color: COLORS.textDarker, fontSize: '16px' }}>Find the perfect role that matches your expertise.</p>
+            </div>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <span style={{ padding: '8px 16px', borderRadius: '100px', backgroundColor: COLORS.primary, color: COLORS.white, fontSize: '14px', fontWeight: 700 }}>All Departments</span>
+              <span style={{ padding: '8px 16px', borderRadius: '100px', backgroundColor: COLORS.cardBorder, color: COLORS.textBlack, fontSize: '14px', fontWeight: 700 }}>Engineering</span>
+              <span style={{ padding: '8px 16px', borderRadius: '100px', backgroundColor: COLORS.cardBorder, color: COLORS.textBlack, fontSize: '14px', fontWeight: 700 }}>Design</span>
+            </div>
           </div>
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label style={{ fontSize: 'clamp(0.75rem, 1.2vw, 0.85rem)', fontWeight: 700 }}>Name</label>
-                <input name="name" type="text" placeholder="John Doe" required style={{ padding: '12px', borderRadius: '10px', border: `1px solid ${COLORS.border}`, background: '#F8FAFC', outlineColor: COLORS.primary }} />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label style={{ fontSize: 'clamp(0.75rem, 1.2vw, 0.85rem)', fontWeight: 700 }}>Email</label>
-                <input name="email" type="email" placeholder="john@example.com" required style={{ padding: '12px', borderRadius: '10px', border: `1px solid ${COLORS.border}`, background: '#F8FAFC', outlineColor: COLORS.primary }} />
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label style={{ fontSize: 'clamp(0.75rem, 1.2vw, 0.85rem)', fontWeight: 700 }}>Resume / CV</label>
-                <div style={{ border: `2px dashed ${COLORS.border}`, padding: '24px', borderRadius: '10px', textAlign: 'center', cursor: 'pointer', position: 'relative' }}>
-                   <input 
-                    type="file" 
-                    name="resume"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      setFileName(file?.name || "No file chosen");
-                      setResumeFile(file || null);
-                    }}
-                    style={{ opacity: 0, position: 'absolute', inset: 0, cursor: 'pointer' }} 
-                   />
-                   <UploadCloud size={28} style={{ color: COLORS.textMuted, marginBottom: '6px' }} />
-                   <p style={{ fontSize: 'clamp(0.75rem, 1.2vw, 0.85rem)', color: COLORS.textMuted }}>{fileName}</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {[
+              { title: "Frontend Developer", loc: "Remote / New York", sal: "$120k - $160k" },
+              { title: "Backend Engineer", loc: "Remote / London", sal: "$130k - $180k" },
+              { title: "Product Designer", loc: "Remote", sal: "$110k - $150k" }
+            ].map((role, i) => (
+              <div key={i} className="group hover-scale" style={{ backgroundColor: COLORS.white, padding: isMobile ? '24px' : '32px', borderRadius: '16px', border: `1px solid ${COLORS.cardBorder}`, display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: '24px', transition: 'all 0.3s', cursor: 'pointer' }}>
+                <div>
+                  <h3 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>{role.title}</h3>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '14px', color: COLORS.textMuted }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={16}/> Full-time</span>
+                  </div>
                 </div>
-            </div>
+                <button 
+                  onClick={() => document.getElementById('apply')?.scrollIntoView({behavior:'smooth'})}
+                  style={{ color: COLORS.primary, backgroundColor: COLORS.lightBlueBg, border: 'none', padding: '12px 24px', borderRadius: '12px', fontWeight: 700, fontSize: '14px', transition: 'all 0.2s', width: isMobile ? '100%' : 'auto' }}
+                >
+                  Apply Now
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            <button type="submit" disabled={isSubmitting} style={{ background: COLORS.primary, color: COLORS.white, padding: '14px', borderRadius: '10px', fontWeight: 700, border: 'none', cursor: isSubmitting ? 'not-allowed' : 'pointer', fontSize: '15px', marginTop: '8px' }}>
-              {isSubmitting ? 'Processing...' : PAGE_DATA.formSection.labels.submit}
-            </button>
-            
-            {status && (
-              <p style={{ color: status.type === 'success' ? '#10B981' : '#EF4444', fontWeight: 600, textAlign: 'center' }}>{status.msg}</p>
-            )}
-          </form>
-        </section>
-      </main>
+      {/* --- 5. APPLICATION FORM --- */}
+      <section id="apply" style={{ backgroundColor: COLORS.white, padding: '60px 24px' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', backgroundColor: COLORS.darkSection, borderRadius: '48px', padding: isMobile ? '48px 24px' : '96px 48px', textAlign: 'center', border: '1px solid #1e293b' }}>
+          <h2 style={{ fontSize: isMobile ? '32px' : '48px', fontWeight: 800, color: COLORS.white, marginBottom: '24px' }}>
+            <EditableText value={PAGE_DATA.formSection.title} onSave={handleSave} configPath="careers.PAGE_DATA.formSection.title">{PAGE_DATA.formSection.title}</EditableText>
+          </h2>
+          <p style={{ color: '#94a3b8', fontSize: '18px', maxWidth: '650px', margin: '0 auto 40px', lineHeight: 1.6 }}>
+            <EditableText value={PAGE_DATA.formSection.description} onSave={handleSave} configPath="careers.PAGE_DATA.formSection.description" multiline>{PAGE_DATA.formSection.description}</EditableText>
+          </p>
+
+          <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px' }}>
+                <input name="name" type="text" placeholder="Your Name" required style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #334155', backgroundColor: '#1e293b', color: 'white', outline: 'none' }} />
+                <input name="email" type="email" placeholder="Email Address" required style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #334155', backgroundColor: '#1e293b', color: 'white', outline: 'none' }} />
+              </div>
+              
+              <div style={{ border: '2px dashed #334155', padding: '32px', borderRadius: '16px', backgroundColor: '#1e293b', cursor: 'pointer', position: 'relative', transition: 'all 0.2s' }}>
+                <input 
+                  type="file" 
+                  name="resume"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    setFileName(file?.name || "No file chosen");
+                    setResumeFile(file || null);
+                  }}
+                  style={{ opacity: 0, position: 'absolute', inset: 0, cursor: 'pointer' }} 
+                />
+                <UploadCloud size={32} style={{ color: '#94a3b8', margin: '0 auto 12px' }} />
+                <p style={{ fontSize: '14px', color: COLORS.white, fontWeight: 600, margin: 0 }}>{fileName}</p>
+                <p style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Click to upload Resume/CV</p>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '16px', marginTop: '8px' }}>
+                <button type="submit" disabled={isSubmitting} className="hover-scale" style={{ flex: 1, backgroundColor: COLORS.primary, color: COLORS.white, padding: '16px 32px', borderRadius: '16px', fontWeight: 700, fontSize: '18px', border: 'none', cursor: isSubmitting ? 'not-allowed' : 'pointer', boxShadow: '0 20px 25px -5px rgba(11, 80, 218, 0.3)', transition: 'all 0.2s' }}>
+                  {isSubmitting ? 'Processing...' : PAGE_DATA.formSection.labels.submit}
+                </button>
+                <button type="button" className="hover-scale" style={{ flex: 1, backgroundColor: 'transparent', color: COLORS.white, padding: '16px 32px', borderRadius: '16px', fontWeight: 700, fontSize: '18px', border: '1px solid #334155', cursor: 'pointer', transition: 'all 0.2s' }}>
+                  Follow our Journey
+                </button>
+              </div>
+              
+              {status && (
+                <p style={{ marginTop: '16px', fontSize: '14px', fontWeight: 600, color: status.type === 'success' ? '#4ade80' : '#f87171' }}>{status.msg}</p>
+              )}
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* --- 6. FOOTER --- */}
+      <footer style={{ backgroundColor: COLORS.white, padding: '48px 24px', borderTop: `1px solid ${COLORS.cardBorder}` }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: 'center', gap: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ backgroundColor: COLORS.primary, padding: '6px', borderRadius: '6px', color: COLORS.white }}>
+              <Layers size={20} />
+            </div>
+            <span style={{ fontWeight: 700, fontSize: '18px' }}>Crestcode</span>
+          </div>
+          
+          <p style={{ color: COLORS.textMuted, fontSize: '14px', margin: 0, textAlign: 'center' }}>
+            2024 Crestcode Technologies. All rights reserved. Built with passion for the web.
+          </p>
+          
+          <div style={{ display: 'flex', gap: '24px' }}>
+            <Globe size={20} color={COLORS.textMuted} style={{ cursor: 'pointer' }} />
+            <Mail size={20} color={COLORS.textMuted} style={{ cursor: 'pointer' }} />
+            <Share2 size={20} color={COLORS.textMuted} style={{ cursor: 'pointer' }} />
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

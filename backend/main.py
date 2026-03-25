@@ -1,16 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from database import engine
-from models import Base
-from routers import contact, projects
-
-Base.metadata.create_all(bind=engine)
+from routers import contact, projects, careers
 
 app = FastAPI(title="CrestCode API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],  # Allow all origins for development
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -18,6 +14,7 @@ app.add_middleware(
 
 app.include_router(contact.router, prefix="/api/contact", tags=["contact"])
 app.include_router(projects.router, prefix="/api/projects", tags=["projects"])
+app.include_router(careers.router, prefix="/api/careers", tags=["careers"])
 
 @app.get("/")
 async def root():
