@@ -161,7 +161,8 @@ export default function CareersPage() {
           <div style={{ position: 'absolute', inset: 0, opacity: 0.1, backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }}></div>
           
           <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: isMobile ? '32px 24px' : '48px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ color: COLORS.white, maxWidth: '800px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 20 }}>
+            {/* Text Content */}
+            <div style={{ color: COLORS.white, maxWidth: '800px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 20, marginBottom: '48px' }}>
               <h2 style={{ fontSize: isMobile ? '32px' : '48px', fontWeight: 800, marginBottom: '32px', textAlign: 'center' }}>Life at Crestcode</h2>
               <div style={{ fontSize: '18px', lineHeight: 1.7, opacity: 0.9, display: 'flex', flexDirection: 'column', gap: '24px', textAlign: 'center' }}>
                 <p>Our work culture is built on a foundation of <strong>radical trust</strong> and <strong>empowerment</strong>. We don't believe in micromanagement; we believe in hiring exceptional people and giving them the space to excel.</p>
@@ -169,13 +170,45 @@ export default function CareersPage() {
               </div>
             </div>
             
-            {/* Images positioned behind text */}
-            <div style={{ position: 'absolute', top: '0', left: '0', right: '0', bottom: '0', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1, opacity: 0.3 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', maxWidth: '600px', width: '100%', padding: '0 48px' }}>
-                <div style={{ height: '192px', borderRadius: '16px', backgroundColor: 'rgba(255,255,255,0.1)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: "url('https://images.unsplash.com/photo-1522071820081-009f0129c71c')" }}></div>
-                <div style={{ height: '192px', borderRadius: '16px', backgroundColor: 'rgba(255,255,255,0.1)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: "url('https://images.unsplash.com/photo-1531482615713-2afd69097998')", marginTop: '32px' }}></div>
-                <div style={{ height: '192px', borderRadius: '16px', backgroundColor: 'rgba(255,255,255,0.1)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: "url('https://images.unsplash.com/photo-1556761175-b413da4baf72')", marginTop: '-32px' }}></div>
-                <div style={{ height: '192px', borderRadius: '16px', backgroundColor: 'rgba(255,255,255,0.1)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: "url('https://images.unsplash.com/photo-1517048676732-d65bc937f952')" }}></div>
+            {/* Image Grid */}
+            <div style={{ position: 'relative', zIndex: 15, width: '100%', maxWidth: '900px', margin: '0 auto' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '20px', width: '100%' }}>
+                <div style={{ 
+                  height: isMobile ? '200px' : '240px', 
+                  borderRadius: '16px', 
+                  backgroundColor: 'rgba(255,255,255,0.1)', 
+                  backgroundSize: 'cover', 
+                  backgroundPosition: 'center', 
+                  backgroundImage: "url('https://images.unsplash.com/photo-1522071820081-009f0129c71c')",
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(11, 80, 218, 0.2)' }}></div>
+                </div>
+                <div style={{ 
+                  height: isMobile ? '200px' : '240px', 
+                  borderRadius: '16px', 
+                  backgroundColor: 'rgba(255,255,255,0.1)', 
+                  backgroundSize: 'cover', 
+                  backgroundPosition: 'center', 
+                  backgroundImage: "url('https://images.unsplash.com/photo-1531482615713-2afd69097998')",
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(11, 80, 218, 0.2)' }}></div>
+                </div>
+                <div style={{ 
+                  height: isMobile ? '200px' : '240px', 
+                  borderRadius: '16px', 
+                  backgroundColor: 'rgba(255,255,255,0.1)', 
+                  backgroundSize: 'cover', 
+                  backgroundPosition: 'center', 
+                  backgroundImage: "url('https://images.unsplash.com/photo-1556761175-b413da4baf72')",
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(11, 80, 218, 0.2)' }}></div>
+                </div>
               </div>
             </div>
           </div>
