@@ -30,10 +30,78 @@ export default function CareersPage() {
   const { config, saveConfigToServer } = useAdmin();
   const PAGE_DATA = config?.careers?.PAGE_DATA;
   
-  const [fileName, setFileName] = useState("No file chosen");
+  const [fileName, setFileName] = useState<string>("No file chosen");
   const [resumeFile, setResumeFile] = useState<File | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
+  const [selectedJob, setSelectedJob] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  type JobDetails = {
+    title: string;
+    type: string;
+    location: string;
+    salary: string;
+    requirements: string[];
+    responsibilities: string[];
+  };
+
+  const jobDetails: Record<string, JobDetails> = {
+    "Frontend Developer": {
+      title: "Frontend Developer",
+      type: "Full-time",
+      location: "Remote / New York",
+      salary: "$120k - $160k",
+      requirements: [
+        "5+ years of experience with React/Next.js",
+        "Strong proficiency in TypeScript and modern CSS",
+        "Experience with RESTful APIs and state management",
+        "Understanding of responsive design principles"
+      ],
+      responsibilities: [
+        "Build and maintain responsive web applications",
+        "Collaborate with design and backend teams",
+        "Write clean, maintainable code",
+        "Optimize applications for performance and SEO"
+      ]
+    },
+    "Backend Engineer": {
+      title: "Backend Engineer",
+      type: "Full-time",
+      location: "Remote / London", 
+      salary: "$130k - $180k",
+      requirements: [
+        "5+ years of backend development experience",
+        "Strong knowledge of Node.js and Express",
+        "Experience with databases (PostgreSQL, MongoDB)",
+        "Understanding of microservices architecture"
+      ],
+      responsibilities: [
+        "Design and implement scalable backend systems",
+        "Develop RESTful APIs and services",
+        "Optimize database queries and performance",
+        "Collaborate with frontend team on integration"
+      ]
+    },
+    "Product Designer": {
+      title: "Product Designer",
+      type: "Full-time",
+      location: "Remote",
+      salary: "$110k - $150k",
+      requirements: [
+        "3+ years of product design experience",
+        "Proficiency in Figma, Sketch, or Adobe XD",
+        "Strong understanding of UX/UI principles",
+        "Experience with design systems and component libraries"
+      ],
+      responsibilities: [
+        "Create intuitive user interfaces and experiences",
+        "Develop and maintain design systems",
+        "Collaborate with engineering teams",
+        "Conduct user research and usability testing"
+      ]
+    }
+  };
 
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
@@ -233,7 +301,10 @@ export default function CareersPage() {
                   </div>
                 </div>
                 <button 
-                  onClick={() => document.getElementById('apply')?.scrollIntoView({behavior:'smooth'})}
+                  onClick={() => {
+                    setSelectedJob(role.title);
+                    setIsModalOpen(true);
+                  }}
                   style={{ color: COLORS.primary, backgroundColor: COLORS.lightBlueBg, border: 'none', padding: '12px 24px', borderRadius: '25px', fontWeight: 700, fontSize: '14px', transition: 'all 0.2s', width: isMobile ? '100%' : 'auto' }}
                 >
                   View Job Details
@@ -302,7 +373,7 @@ export default function CareersPage() {
           </div>
           
           <p style={{ color: COLORS.textMuted, fontSize: '14px', margin: 0, textAlign: 'center' }}>
-            © 2024 Crestcode Technologies. All rights reserved. Built with passion for the web.
+            &copy; 2024 Crestcode Technologies. All rights reserved. Built with passion for the web.
           </p>
           
           <div style={{ display: 'flex', gap: '24px' }}>
@@ -312,6 +383,106 @@ export default function CareersPage() {
           </div>
         </div>
       </footer>
+
+      {/* --- JOB DETAILS MODAL --- */}
+      {isModalOpen && selectedJob && (
+        <div style={{ 
+          position: 'fixed', 
+          top: 0, 
+          left: 0, 
+          right: 0, 
+          bottom: 0, 
+          backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+          zIndex: 1000, 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          padding: '20px'
+        }}>
+          <div style={{ 
+            backgroundColor: COLORS.white, 
+            borderRadius: '20px', 
+            maxWidth: '600px', 
+            width: '100%', 
+            maxHeight: '80vh', 
+            overflow: 'auto',
+            position: 'relative'
+          }}>
+            {/* Close Button */}
+            <button 
+              onClick={() => setIsModalOpen(false)}
+              style={{ 
+                position: 'absolute', 
+                top: '20px', 
+                right: '20px', 
+                backgroundColor: 'transparent', 
+                border: 'none', 
+                fontSize: '24px', 
+                cursor: 'pointer', 
+                color: COLORS.textMuted,
+                zIndex: 10
+              }}
+            >
+              &times;
+            </button>
+
+            {/* Modal Content */}
+            <div style={{ padding: '40px' }}>
+              <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '16px', color: COLORS.textBlack }}>
+                  {jobDetails[selectedJob as keyof typeof jobDetails].title}
+              </h2>
+              
+              <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', fontSize: '14px', color: COLORS.textMuted }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Clock size={16}/> {jobDetails[selectedJob as keyof typeof jobDetails].type}
+                </span>
+                <span>{jobDetails[selectedJob as keyof typeof jobDetails].location}</span>
+                <span>{jobDetails[selectedJob as keyof typeof jobDetails].salary}</span>
+              </div>
+
+              <div style={{ marginBottom: '32px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px', color: COLORS.textBlack }}>Requirements</h3>
+                <ul style={{ margin: 0, paddingLeft: '20px', color: COLORS.textDarker, lineHeight: 1.6 }}>
+                  {jobDetails[selectedJob as keyof typeof jobDetails].requirements.map((req: string, index: number) => (
+                    <li key={index} style={{ marginBottom: '8px' }}>{req}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div style={{ marginBottom: '32px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px', color: COLORS.textBlack }}>Responsibilities</h3>
+                <ul style={{ margin: 0, paddingLeft: '20px', color: COLORS.textDarker, lineHeight: 1.6 }}>
+                  {jobDetails[selectedJob as keyof typeof jobDetails].responsibilities.map((resp: string, index: number) => (
+                    <li key={index} style={{ marginBottom: '8px' }}>{resp}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <button 
+                onClick={() => {
+                  setIsModalOpen(false);
+                  document.getElementById('apply')?.scrollIntoView({behavior:'smooth'});
+                }}
+                style={{ 
+                  backgroundColor: COLORS.primary, 
+                  color: COLORS.white, 
+                  padding: '16px 32px', 
+                  borderRadius: '12px', 
+                  fontWeight: 700, 
+                  fontSize: '16px', 
+                  border: 'none', 
+                  cursor: 'pointer', 
+                  width: '100%',
+                  boxShadow: '0 10px 15px -3px rgba(11, 80, 218, 0.25)',
+                  transition: 'all 0.2s'
+                }}
+              >
+                Apply Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
